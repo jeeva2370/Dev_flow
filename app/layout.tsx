@@ -4,6 +4,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import  ThemeProvider from "@/context/Theme";
 import Navbar from "@/components/navigation/navbar";
+import {Toaster} from "@/components/ui/sonner";
+import {SessionProvider} from "next-auth/react";
+import {auth} from "@/auth";
 
 const inter = localFont({
     src:"./fonts/InterVF.ttf",
@@ -31,22 +34,28 @@ export const metadata: Metadata = {
   description:     "A community-driven platform for asking and answering programming questions. Get help, share knowledge, and collaborate with developers from around the world. Explore topics in web development, mobile app development, algorithms, data structures, and more.",
 };
 
-export default function RootLayout({
+const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>)=> {
+    const session= await auth()
   return (
     <html lang="en" suppressHydrationWarning>
+    <SessionProvider session={session}>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
       >
+
       <ThemeProvider attribute="class" defaultTheme='system' enableSystem disableTransitionOnChange>
-          <Navbar />
+
           {children}
       </ThemeProvider>
-
+      <Toaster/>
       </body>
+    </SessionProvider>
     </html>
   );
 }
+
+export default RootLayout;
